@@ -1,0 +1,62 @@
+<dom-module id="my-acteursfilm" >
+        <!-- Defines the element's style and local DOM -->
+      <template id="temp1">
+            <style>
+              :host {
+                display: block;
+        
+                padding: 16px;
+              }
+            </style>
+                    <app-route route="{{route}}" pattern="/:postId/:tab" data="{{routeData}}" tail="{{subroute}}"></app-route>
+                    
+            <iron-ajax
+            id="getuser"   
+            auto  
+            url="https://swapi.co/api/films/{{routeData.postId}}" 
+            handle-as="json"
+            last-response="{{movie}}">       
+            </iron-ajax>
+    
+          
+            <h1 id="h1" name="h1">[[movie.title]]</h1>
+           
+            <div class="card">               
+               
+                  <blockquote> Episode N°: [[movie.episode_id]]</blockquote>
+                  <blockquote> Directeur : [[movie.director]]</blockquote>
+                  <blockquote> Producteur : [[movie.producer]]</blockquote>
+                  <paper-button  raise on-click="test"> Acteurs : </paper-button>
+    
+                  <template  is="dom-repeat" items="{{movie.characters}}" as="character" >
+                      
+                        <blockquote >  [[character]]</blockquote>
+                    
+                         </template>
+                </div>       
+          </template>
+          
+          <script>
+            // Your new element extends the Polymer.Element base class
+            class MyActeursFilm extends Polymer.Element {
+              static get is() { 
+               
+                return 'my-acteursfilm'; }  
+                static get properties() {
+                    return {
+                        route: Object,
+                    };
+                }
+                test(){
+                    var tab2=this.routeData.tab.split(",");
+                    
+                    console.log(tab2[1]);
+                }
+                
+              
+            }
+            //Now, register your new custom element so the browser can use it
+            customElements.define(MyActeursFilm.is, MyActeursFilm);
+           
+          </script>
+        </dom-module>

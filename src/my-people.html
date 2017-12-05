@@ -1,0 +1,71 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="my-people">
+    <!-- Defines the element's style and local DOM -->
+  <template >
+        <style include="shared-styles">
+          :host {
+            display: block;
+    
+            padding: 16px;
+          }
+        </style>
+        <iron-ajax
+        id="getQuoteAjax"
+        auto
+        url="https://swapi.co/api/people/"
+        handle-as="json"
+        last-response="{{user}}"
+        on-response="sort">
+        
+      </iron-ajax>
+
+     
+
+        
+
+        <div class="card">  
+            <h1>People</h1>          
+                 
+            <table>
+              <tr><input id="search" on-change="search"/><paper-button raise on-click="search">search</paper-button></tr>
+            <template is="dom-repeat" items="{{user.results}}" as="items" >
+                
+              <tr>
+               <td><a href="[[items.url]]"> <blockquote>[[items.name]]</blockquote></a></td>
+              <td> <paper-button raise on-click="detailPeople">details</paper-button></td>
+              </tr>
+              
+              </template>  
+            </table>              
+            </div>           
+      </template> 
+      
+      <script>
+        // Your new element extends the Polymer.Element base class
+        class MyPeople extends Polymer.Element {
+          static get is() { return 'my-people'; 
+          }
+          search(){          
+           this.$.getQuoteAjax.url="https://swapi.co/api/people/?search="+this.$.search.value;
+          }
+        detailPeople(id){  
+              var tab=[];  
+               for (let i=0; i<id.model.items.films.length;i++){
+                  var x = id.model.items.films[i].split("/");
+                 tab.push(x[5]);                
+               }          
+                  var x = id.model.items.url.split("/");
+                  location.href = '/detailpeople/'+x[5];     
+        }
+       
+      }
+        //Now, register your new custom element so the browser can use it
+        customElements.define(MyPeople.is, MyPeople);
+       
+      </script>
+    </dom-module>

@@ -1,0 +1,108 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/fetch-element/fetch-element.html">
+
+<dom-module id="my-detailStarships">
+    <!-- Defines the element's style and local DOM -->
+  <template >
+        <style>
+          :host {
+            display: block;
+    
+            padding: 16px;
+          }
+        </style>
+                <app-route route="{{route}}" pattern="/:postId" data="{{routeData}}" tail="{{subroute}}"></app-route>
+                
+        <iron-ajax
+        id="get_detail_starship"   
+        auto  
+        url="https://swapi.co/api/starships/{{routeData.postId}}" 
+        handle-as="json"
+        last-response="{{starship}}"
+        on-response="get_starship">       
+        </iron-ajax>
+
+        <iron-ajax
+        id="get_film_vaisseau"  
+        url=""
+        handle-as="json"
+        last-response="{{film_vaisseau}}"
+        on-response="_onResponse"
+        >       
+        </iron-ajax>
+
+        <h1>[[starship.name]]</h1>
+       
+        <div class="card">               
+            
+              <blockquote> Nom du vaisseau : [[starship.name]]</blockquote>
+              <blockquote> Modèle du vaisseau : [[starship.model]]</blockquote>
+              <blockquote> Capacité du vaisseau : [[starship.passengers]]</blockquote>
+              <blockquote> Fabricant du vaisseau: [[starship.manufacturer]]</blockquote>
+
+              <paper-button  > Films : </paper-button>
+
+              <template  is="dom-repeat" items="{{tab_films}}" as="movies" >
+                  <a href="/detailmovie/{{movies.url}}"><blockquote>{{movies.title}}</blockquote></a>
+                  </template>
+            </div>       
+      </template>
+      
+      <script>
+        // Your new element extends the Polymer.Element base class
+        class MyDetailStarships extends Polymer.Element {
+          static get is() { 
+           
+            return 'my-detailstarships'; }  
+            static get properties() {
+                return {
+                    route: Object,
+                    tab_films:{
+                         type:Array,
+                         value:[]
+                    },
+                    tab_films_un_vaisseau:{
+                         type:Array,
+                         value:[]
+                    }
+                };
+            }
+           
+            _onResponse(e) {
+                
+                            var url=e.detail.response.url
+                            var url2=url.split("/");                                  
+                           //console.log(e.detail.response.title);
+                            this.push('tab_films',{title:e.detail.response.title,url:url2[5]});               
+                     }
+                     
+
+              get_starship  (e){ 
+                this.tab_films_un_vaisseau=[]; 
+                this.tab_films=[];
+                var url=e.detail.response.films;
+                        
+                for (let i=0; i<url.length;i++){
+                            var x = e.detail.response.films[i].split("/");
+                           this.push('tab_films_un_vaisseau',{film_id:x[5]}); 
+                           //console.log(this.tab_films_un_acteur[i].film_id);             
+                         }
+                         for(let i = 0; i<this.tab_films_un_vaisseau.length;i++){
+                          this.$.get_film_vaisseau.url='https://swapi.co/api/films/'+this.tab_films_un_vaisseau[i].film_id;
+                          //console.log(this.$.get_film_acteur.url);
+                          this.$.get_film_vaisseau.generateRequest();
+                
+                        }
+                        
+            }   
+          
+        }
+        //Now, register your new custom element so the browser can use it
+        customElements.define(MyDetailStarships.is, MyDetailStarships);
+       
+      </script>
+    </dom-module>

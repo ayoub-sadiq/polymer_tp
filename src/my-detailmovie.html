@@ -1,0 +1,174 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/fetch-element/fetch-element.html">
+
+
+
+<dom-module id="my-detailmovie" name="detailmovie">
+    <!-- Defines the element's style and local DOM -->
+  <template id="temp1">
+        <style>
+          :host {
+            display: block;
+    
+            padding: 16px;
+          }
+        </style>
+                <app-route route="{{route}}" pattern="/:postId" data="{{routeData}}" tail="{{subroute}}"></app-route>
+
+        <iron-ajax
+        id="getuser"   
+        auto
+        url="https://swapi.co/api/films/{{routeData.postId}}" 
+        handle-as="json"
+        last-response="{{movie}}"
+        on-response="test">       
+        </iron-ajax>
+
+        <iron-ajax
+        id="getstarship"   
+        auto
+        url=
+        handle-as="json"
+        last-response="{{starship}}"
+        on-response="_onResponse2">       
+        </iron-ajax>
+
+        <iron-ajax
+        id="getuser2"  
+        url=""
+        handle-as="json"
+        last-response="{{movie2}}"
+        on-response="_onResponse"
+        >       
+        </iron-ajax>
+        
+
+      
+        <h1 id="h1" name="h1">[[movie.title]]</h1>
+       
+        <div class="card">               
+           
+              <blockquote> Episode N°: [[movie.episode_id]]</blockquote>
+              <blockquote> Directeur : [[movie.director]]</blockquote>
+              <blockquote> Producteur : [[movie.producer]]</blockquote>
+              <table>
+                  <tr>
+                      <td>
+              <paper-button > Acteurs : </paper-button>
+
+              
+              <template  is="dom-repeat" items="{{tab_acteurs}}" as="character" >
+                    <a href="/detailpeople/{{character.url}}"><blockquote >{{character.name}}</blockquote></a>
+                
+                </template>
+            </td>
+            <td style="position:absolute">
+                    <paper-button  > Starships : </paper-button>
+                    <template  is="dom-repeat" items="{{tab_starships_film}}" as="starship"  >
+                      <a href="/detailStarships/{{starship.url}}"><blockquote >{{starship.name}}</blockquote></a>
+                        
+                        </template>
+            </td>
+            </tr>
+            </table> 
+            </div>       
+      </template>
+      
+      <script>
+        // Your new element extends the Polymer.Element base class
+        class MyDetailMovie extends Polymer.Element {
+          static get is() { 
+            return 'my-detailmovie' }  
+            static get properties() {
+                return {
+                    route: Object,
+                    tab_acteurs:{
+                         type:Array,
+                         value:[]
+                    },
+                    tab_acteurs_un_film:{
+                         type:Array,
+                         value:[]
+                    },
+                    tab_starships_film:{
+                        type:Array,
+                        value:[]
+                    }
+                    ,
+                    tab_starships:{
+                        type:Array,
+                        value:[]
+                    }
+
+             };
+            }
+            
+                     _onResponse(e) {
+                                var url=e.detail.response.url
+                            var url2=url.split("/"); 
+                        //console.log(e.detail.response.url)
+                            this.push('tab_acteurs',{name:e.detail.response.name,url:url2[5]});               
+                     }
+
+                     _onResponse2(e) {
+                                var url=e.detail.response.url
+                                var url2=url.split("/"); 
+                       // console.log(e.detail.response)
+                            this.push('tab_starships_film',{name:e.detail.response.name,url:url2[5]});               
+                     }
+
+
+                
+                     test(e){   
+                         this.tab_acteurs=[];
+                         this.tab_acteurs_un_film=[];
+                         this.tab_starships=[];
+                         this.tab_starships_film=[];
+                        var url=e.detail.response.characters;
+                        
+                        for (let i=0; i<url.length;i++){
+                            var x = e.detail.response.characters[i].split("/");
+                           this.push('tab_acteurs_un_film',{actor_id:x[5]});                
+                         }
+
+                                for(let i = 0; i<this.tab_acteurs_un_film.length;i++){
+                                    this.$.getuser2.url='https://swapi.co/api/people/'+this.tab_acteurs_un_film[i].actor_id;
+                                this.$.getuser2.generateRequest();                                                        
+                         }
+
+
+                         for (let i=0; i<e.detail.response.starships.length;i++){
+                            var x = e.detail.response.starships[i].split("/");
+                            
+                           this.push('tab_starships',{starship_id:x[5]});                
+                         }
+
+                                for(let i = 0; i<this.tab_starships.length;i++){
+                                    //console.log(this.tab_starships.length);
+                                    this.$.getstarship.url='https://swapi.co/api/starships/'+this.tab_starships[i].starship_id; 
+                                    console.log(this.$.getstarship.url);           
+                                     this.$.getstarship.generateRequest();     
+       
+                }
+
+                                
+                               
+                                
+                //console.log(this.$.tab3);
+               // var x = id.model.items.movie2;
+           // console.log(this.$.tab2[1]);
+           
+           
+           //console.log(this.tab3[1])
+            }}
+          
+            
+        //Now, register your new custom element so the browser can use it
+        customElements.define(MyDetailMovie.is, MyDetailMovie);
+       
+      </script>
+    </dom-module>
