@@ -22,6 +22,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         padding: 10px;
       }
+    
+
     </style>
         <iron-ajax
         id="getfilms"
@@ -36,11 +38,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <div class="card">
         <h1>Movies</h1> 
         <table> 
-            <tr><input id="search" on-change="search"/><paper-button raise on-click="search">search</paper-button></tr>
+            <tr><input id="search" on-change="search"/><paper-button toggles raised raise on-click="search">search</paper-button></tr>
         <template is="dom-repeat" items="{{user.results}}" as="items">
             <tr>
             <td><a href="[[items.url]]"> <blockquote>[[items.title]]</blockquote></a></td>
-            <td> <paper-button raise on-click="detailmovie">details</paper-button></td>
+            <td> <paper-button toggles raised raise on-click="detailmovie">details</paper-button></td>
             </tr>            
            </template>
            </table>
@@ -56,11 +58,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                location.href = '/detailmovie/'+x[5];
     
         }
-        search(){
-          
-           this.$.getfilms.url="https://swapi.co/api/films/?search="+this.$.search.value;
-           
-           
+        search(){         
+           this.$.getfilms.url="https://swapi.co/api/films/?search="+this.$.search.value;      
           }
     }
     window.customElements.define(MyMovies.is, MyMovies);

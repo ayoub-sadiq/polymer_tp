@@ -27,6 +27,15 @@
         </iron-ajax>
 
         <iron-ajax
+        id="getpilots"   
+       
+        url=""
+        handle-as="json"
+        last-response="{{pilote}}"
+        on-response="_onResponse2">       
+        </iron-ajax>
+
+        <iron-ajax
         id="get_film_vaisseau"  
         url=""
         handle-as="json"
@@ -44,11 +53,25 @@
               <blockquote> Capacité du vaisseau : [[starship.passengers]]</blockquote>
               <blockquote> Fabricant du vaisseau: [[starship.manufacturer]]</blockquote>
 
+              <table>
+                  <tr>
+                      <td>
               <paper-button  > Films : </paper-button>
 
               <template  is="dom-repeat" items="{{tab_films}}" as="movies" >
                   <a href="/detailmovie/{{movies.url}}"><blockquote>{{movies.title}}</blockquote></a>
                   </template>
+                </td>
+
+                <td style="position:absolute">
+                    <paper-button  > Pilotes : </paper-button>
+                    <template  is="dom-repeat" items="{{tab_pilote_starship}}" as="pilote"  >
+                      <a href="/detailpeople/{{pilote.url}}"><blockquote >{{pilote.name}}</blockquote></a>
+                        
+                        </template>
+            </td>
+                </tr>
+                </table>
             </div>       
       </template>
       
@@ -68,6 +91,15 @@
                     tab_films_un_vaisseau:{
                          type:Array,
                          value:[]
+                    },
+                    tab_pilotes:{
+                        type:Array,
+                        value:[]
+                    }
+                    ,
+                    tab_pilote_starship:{
+                        type:Array,
+                        value:[]
                     }
                 };
             }
@@ -80,7 +112,12 @@
                             this.push('tab_films',{title:e.detail.response.title,url:url2[5]});               
                      }
                      
-
+           _onResponse2(e) {
+                   var url=e.detail.response.url;
+                    var url2=url.split("/"); 
+                       // console.log(e.detail.response)
+                            this.push('tab_pilote_starship',{name:e.detail.response.name,url:url2[5]});               
+                     }
               get_starship  (e){ 
                 this.tab_films_un_vaisseau=[]; 
                 this.tab_films=[];
@@ -97,7 +134,18 @@
                           this.$.get_film_vaisseau.generateRequest();
                 
                         }
-                        
+
+                        for (let i=0; i<e.detail.response.pilots.length;i++){
+                            var x = e.detail.response.pilots[i].split("/");
+                            
+                           this.push('tab_pilotes',{pilote_id:x[5]});                
+                         }
+
+                         for(let i = 0; i<this.tab_pilotes.length;i++){
+                                    //console.log(this.tab_starships.length);
+                                    this.$.getpilots.url='https://swapi.co/api/people/'+this.tab_pilotes[i].pilote_id; 
+                                    console.log(this.$.getpilots.url);           
+                                     this.$.getpilots.generateRequest();  }
             }   
           
         }

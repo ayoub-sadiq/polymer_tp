@@ -27,6 +27,15 @@
         </iron-ajax>
 
         <iron-ajax
+        id="getstarship"   
+        
+        url=""
+        handle-as="json"
+        last-response="{{starship}}"
+        on-response="_onResponse2">       
+        </iron-ajax>
+
+        <iron-ajax
         id="get_film_acteur"  
         url=""
         handle-as="json"
@@ -44,11 +53,25 @@
               <blockquote> Taille : [[acteur.height]]</blockquote>
               <blockquote> Poids: [[acteur.mass]]</blockquote>
 
+              <table>
+                  <tr>
+                      <td>
               <paper-button  > Films : </paper-button>
 
               <template  is="dom-repeat" items="{{tab_films}}" as="movies" >
                   <a href="/detailmovie/{{movies.url}}"><blockquote>{{movies.title}}</blockquote></a>
                   </template>
+                </td>
+
+                <td style="position:absolute">
+                    <paper-button  > Starships : </paper-button>
+                    <template  is="dom-repeat" items="{{tab_starships_film}}" as="starship"  >
+                      <a href="/detailStarships/{{starship.url}}"><blockquote >{{starship.name}}</blockquote></a>
+                        
+                        </template>
+            </td>
+            </tr>
+            </table>
             </div>       
       </template>
       
@@ -68,6 +91,15 @@
                     tab_films_un_acteur:{
                          type:Array,
                          value:[]
+                    },
+                    tab_starships_film:{
+                        type:Array,
+                        value:[]
+                    }
+                    ,
+                    tab_starships:{
+                        type:Array,
+                        value:[]
                     }
                 };
             }
@@ -79,7 +111,12 @@
                            //console.log(e.detail.response.title);
                             this.push('tab_films',{title:e.detail.response.title,url:url2[5]});               
                      }
-                     
+                     _onResponse2(e) {
+                                var url=e.detail.response.url
+                                var url2=url.split("/"); 
+                       // console.log(e.detail.response)
+                            this.push('tab_starships_film',{name:e.detail.response.name,url:url2[5]});               
+                     }       
 
               get_films(e){ 
                 this.tab_films_un_acteur=[]; 
@@ -97,6 +134,19 @@
                           this.$.get_film_acteur.generateRequest();
                 
                         }
+                        for (let i=0; i<e.detail.response.starships.length;i++){
+                            var x = e.detail.response.starships[i].split("/");
+                            
+                           this.push('tab_starships',{starship_id:x[5]});                
+                         }
+
+                                for(let i = 0; i<this.tab_starships.length;i++){
+                                    //console.log(this.tab_starships.length);
+                                    this.$.getstarship.url='https://swapi.co/api/starships/'+this.tab_starships[i].starship_id; 
+                                    console.log(this.$.getstarship.url);           
+                                     this.$.getstarship.generateRequest();     
+       
+                }
                         
             }   
           

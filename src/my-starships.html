@@ -34,11 +34,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <div class="card">
      <h1>Starships</h1>   
      <table>         
-        <tr><input id="search" on-change="search"/><paper-button raise on-click="search">search</paper-button></tr>    
+        <tr><input id="search" on-change="search"/><paper-button toggles raised raise on-click="search">search</paper-button></tr>    
             <template is="dom-repeat" items="{{user.results}}" as="items">
               <tr> <td><a href="[[items.url]]"> <blockquote>[[items.name]]</blockquote></a></td>
                
-               <td> <paper-button raise on-click="detailstarships">details</paper-button></td>
+               <td> <paper-button toggles raised raise on-click="detailstarships">details</paper-button></td>
               </tr>
               </template> 
     </div>
